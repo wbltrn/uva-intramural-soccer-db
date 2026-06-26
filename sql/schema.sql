@@ -1,3 +1,9 @@
+-- Table for teams
+CREATE TABLE Teams (
+  team_id  INTEGER PRIMARY KEY,
+  team_name TEXT NOT NULL
+);
+
 -- Table for players
 CREATE TABLE Players (
   player_id  INTEGER PRIMARY KEY,
@@ -5,12 +11,6 @@ CREATE TABLE Players (
   age  INTEGER,
   team_id INTEGER,
   FOREIGN KEY (team_id) REFERENCES Teams(team_id)
-);
-
--- Table for teams
-CREATE TABLE Teams (
-  team_id  INTEGER PRIMARY KEY,
-  team_name TEXT NOT NULL
 );
 
 -- Table for games
@@ -21,8 +21,12 @@ CREATE TABLE Games (
   game_date TEXT,
   location_id INTEGER,
   referee_id INTEGER,
+  season_id INTEGER,
+  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
   FOREIGN KEY (team1_id) REFERENCES Teams(team_id),
   FOREIGN KEY (team2_id) REFERENCES Teams(team_id),
+  FOREIGN KEY (location_id) REFERENCES Locations(location_id),
+  FOREIGN KEY (referee_id) REFERENCES Referees(referee_id)
 );
 
 -- Table for referees
