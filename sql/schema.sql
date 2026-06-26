@@ -12,3 +12,15 @@ CREATE TABLE Teams (
   team_id  INTEGER PRIMARY KEY,
   team_name TEXT NOT NULL
 );
+
+-- Table for games
+CREATE TABLE Games (
+  game_id INTEGER PRIMARY KEY,
+  team1_id INTEGER,
+  team2_id INTEGER,
+  game_date TEXT,
+  location_id INTEGER,
+  referee_id INTEGER,
+  FOREIGN KEY (team1_id) REFERENCES Teams(team_id),
+  FOREIGN KEY (team2_id) REFERENCES Teams(team_id),
+);
