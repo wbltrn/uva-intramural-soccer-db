@@ -24,3 +24,15 @@ CREATE TABLE Games (
   FOREIGN KEY (team1_id) REFERENCES Teams(team_id),
   FOREIGN KEY (team2_id) REFERENCES Teams(team_id),
 );
+
+-- Table for referees
+CREATE TABLE Referees (
+  referee_id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+-- Table for locations 
+CREATE TABLE Locations (
+  location_id INTEGER PRIMARY KEY,
+  field_name TEXT NOT NULL
+);
