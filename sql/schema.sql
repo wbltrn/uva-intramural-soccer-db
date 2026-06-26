@@ -6,4 +6,9 @@ CREATE TABLE Players (
   team_id INTEGER,
   FOREIGN KEY (team_id) REFERENCES Teams(team_id)
 );
-  
+
+-- Table for teams
+CREATE TABLE Teams (
+  team_id  INTEGER PRIMARY KEY,
+  team_name TEXT NOT NULL
+);
