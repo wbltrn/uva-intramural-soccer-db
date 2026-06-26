@@ -36,3 +36,9 @@ CREATE TABLE Locations (
   location_id INTEGER PRIMARY KEY,
   field_name TEXT NOT NULL
 );
+
+-- Table for seasons
+CREATE TABLE Seasons (
+  season_id INTEGER PRIMARY KEY,
+  season_name TEXT NOT NULL
+);
