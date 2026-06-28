@@ -70,4 +70,52 @@ CREATE TABLE Seasons (
   season_status TEXT DEFAULT 'Upcoming'
 );
 
+--table linking a team to a season
+CREATE TABLE Team_Seasons (
+  team_season_id    INTEGER PRIMARY KEY,
+  team_id           INTEGER NOT NULL,
+  season_id         INTEGER NOT NULL,
+  captain_player_id INTEGER,
+  UNIQUE (team_id, season_id),
+  FOREIGN KEY (team_id) REFERENCES Teams(team_id),
+  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
+  FOREIGN KEY (captain_player_id) REFERENCES Players(player_id)
+);
 
+--table linking players to teams for a specific season
+CREATE TABLE Team_Roster (
+  roster_id INTEGER PRIMARY KEY,
+  player_id INTEGER NOT NULL,
+  team_season_id INTEGER NOT NULL,
+  season_id INTEGER NOT NULL,
+  jersey_number INTEGER,
+  roster_status TEXT DEFAULT 'Active',
+  is_captain INTEGER DEFAULT 0,
+  UNIQUE (player_id, season_id),
+  FOREIGN KEY (player_id) REFERENCES Players(player_id),
+  FOREIGN KEY (team_season_id) REFERENCES Team_Seasons(team_season_id),
+  FOREIGN KEY (season_id) REFERENCES Seasons(season_id)
+);
+
+--table linking referees to games
+CREATE TABLE Game_Referees (
+  game_referee_id INTEGER PRIMARY KEY,
+  game_id         INTEGER NOT NULL,
+  referee_id      INTEGER NOT NULL,
+  assignment_role TEXT,
+  UNIQUE (game_id, referee_id),
+  FOREIGN KEY (game_id) REFERENCES Games(game_id),
+  FOREIGN KEY (referee_id) REFERENCES Referees(referee_id)
+);
+
+--table for user logins and access roles
+CREATE TABLE User_Accounts (
+  user_id        INTEGER PRIMARY KEY,
+  username       TEXT UNIQUE NOT NULL,
+  password_hash  TEXT NOT NULL,
+  role           TEXT CHECK (role IN ('Admin','Captain')),
+  player_id      INTEGER,
+  team_season_id INTEGER,
+  FOREIGN KEY (player_id) REFERENCES Players(player_id),
+  FOREIGN KEY (team_season_id) REFERENCES Team_Seasons(team_season_id)
+);
