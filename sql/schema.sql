@@ -4,7 +4,7 @@ CREATE TABLE Teams (
   team_name TEXT NOT NULL,
   division TEXT,
   team_status TEXT DEFAULT 'Active',
-  created_date TEXT
+  created_date DATE DEFAULT CURRENT_DATE
 );
 
 -- Table for players
@@ -19,35 +19,16 @@ CREATE TABLE Players (
   active_status INTEGER DEFAULT 1
 );
 
--- Table for games
-CREATE TABLE Games (
-  game_id              INTEGER PRIMARY KEY,
-  season_id            INTEGER,
-  home_team_season_id  INTEGER,
-  away_team_season_id  INTEGER,
-  location_id          INTEGER,
-  game_date            TEXT,
-  start_time           TEXT,
-  home_score           INTEGER,
-  away_score           INTEGER,
-  game_status          TEXT DEFAULT 'Scheduled',
-  winner_team_season_id INTEGER,
-  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
-  FOREIGN KEY (home_team_season_id) REFERENCES Team_Seasons(team_season_id),
-  FOREIGN KEY (away_team_season_id) REFERENCES Team_Seasons(team_season_id),
-  FOREIGN KEY (location_id) REFERENCES Locations(location_id),
-  FOREIGN KEY (winner_team_season_id) REFERENCES Team_Seasons(team_season_id)
-);
-
--- Table for referees
-CREATE TABLE Referees (
-  referee_id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  certification TEXT,
-  availability TEXT,
-  active_status INTEGER DEFAULT 1
+-- Table for seasons
+CREATE TABLE Seasons (
+  season_id INTEGER PRIMARY KEY,
+  season_name TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  registration_deadline DATE,
+  season_status TEXT DEFAULT 'Upcoming',
+  CHECK (end_date >= start_date),
+  CHECK (registration_deadline IS NULL OR registration_deadline <= start_date)
 );
 
 -- Table for locations 
@@ -60,14 +41,15 @@ CREATE TABLE Locations (
   availability_status TEXT DEFAULT 'Available'
 );
 
--- Table for seasons
-CREATE TABLE Seasons (
-  season_id INTEGER PRIMARY KEY,
-  season_name TEXT NOT NULL,
-  start_date TEXT,
-  end_date TEXT,
-  registration_deadline TEXT,
-  season_status TEXT DEFAULT 'Upcoming'
+-- Table for referees
+CREATE TABLE Referees (
+  referee_id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  certification TEXT,
+  availability TEXT,
+  active_status INTEGER DEFAULT 1
 );
 
 --table linking a team to a season
@@ -95,6 +77,29 @@ CREATE TABLE Team_Roster (
   FOREIGN KEY (player_id) REFERENCES Players(player_id),
   FOREIGN KEY (team_season_id) REFERENCES Team_Seasons(team_season_id),
   FOREIGN KEY (season_id) REFERENCES Seasons(season_id)
+);
+
+-- Table for games
+CREATE TABLE Games (
+  game_id              INTEGER PRIMARY KEY,
+  season_id            INTEGER NOT NULL,
+  home_team_season_id  INTEGER NOT NULL,
+  away_team_season_id  INTEGER NOT NULL,
+  location_id          INTEGER NOT NULL,
+  game_date            DATE NOT NULL,
+  start_time           TIME NOT NULL,
+  home_score           INTEGER,
+  away_score           INTEGER,
+  game_status          TEXT DEFAULT 'Scheduled',
+  winner_team_season_id INTEGER,
+  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
+  FOREIGN KEY (home_team_season_id) REFERENCES Team_Seasons(team_season_id),
+  FOREIGN KEY (away_team_season_id) REFERENCES Team_Seasons(team_season_id),
+  FOREIGN KEY (location_id) REFERENCES Locations(location_id),
+  FOREIGN KEY (winner_team_season_id) REFERENCES Team_Seasons(team_season_id),
+  CHECK (home_team_season_id <> away_team_season_id),
+  CHECK (home_score IS NULL OR home_score >= 0),
+  CHECK (away_score IS NULL OR away_score >= 0)
 );
 
 --table linking referees to games
