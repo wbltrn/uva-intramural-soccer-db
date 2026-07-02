@@ -195,7 +195,7 @@ GROUP BY ts.team_season_id, t.team_name, s.season_name
 HAVING COUNT(tr.player_id) < 8 OR COUNT(tr.player_id) > 18;
 
 -- 3.4 Team standings calculated from completed game scores.
-WITH all_team_game AS (
+WITH all_team_games AS (
   SELECT
     g.season_id,
     g.home_team_season_id AS team_season_id,
