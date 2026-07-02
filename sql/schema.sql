@@ -1,5 +1,5 @@
 -- Table for teams
-CREATE TABLE Teams (
+CREATE TABLE Team (
   team_id  INTEGER PRIMARY KEY,
   team_name TEXT NOT NULL,
   division TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE Teams (
 );
 
 -- Table for players
-CREATE TABLE Players (
+CREATE TABLE Player (
   player_id  INTEGER PRIMARY KEY,
   student_id TEXT UNIQUE NOT NULL,
   name  TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE Players (
 );
 
 -- Table for seasons
-CREATE TABLE Seasons (
+CREATE TABLE Season (
   season_id INTEGER PRIMARY KEY,
   season_name TEXT NOT NULL,
   start_date DATE NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE Seasons (
 );
 
 -- Table for locations 
-CREATE TABLE Locations (
+CREATE TABLE Location (
   location_id INTEGER PRIMARY KEY,
   field_name TEXT NOT NULL,
   field_address TEXT,
@@ -42,7 +42,7 @@ CREATE TABLE Locations (
 );
 
 -- Table for referees
-CREATE TABLE Referees (
+CREATE TABLE Referee (
   referee_id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT,
@@ -53,7 +53,7 @@ CREATE TABLE Referees (
 );
 
 --table linking a team to a season
-CREATE TABLE Team_Seasons (
+CREATE TABLE Team_Season (
   team_season_id    INTEGER PRIMARY KEY,
   team_id           INTEGER NOT NULL,
   season_id         INTEGER NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE Team_Roster (
 );
 
 -- Table for games
-CREATE TABLE Games (
+CREATE TABLE Game (
   game_id              INTEGER PRIMARY KEY,
   season_id            INTEGER NOT NULL,
   home_team_season_id  INTEGER NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE Games (
 );
 
 --table linking referees to games
-CREATE TABLE Game_Referees (
+CREATE TABLE Game_Referee (
   game_referee_id INTEGER PRIMARY KEY,
   game_id         INTEGER NOT NULL,
   referee_id      INTEGER NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE Game_Referees (
 );
 
 --table for user logins and access roles
-CREATE TABLE User_Accounts (
+CREATE TABLE User_Account (
   user_id        INTEGER PRIMARY KEY,
   username       TEXT UNIQUE NOT NULL,
   password_hash  TEXT NOT NULL,
