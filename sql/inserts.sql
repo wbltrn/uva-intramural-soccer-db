@@ -162,22 +162,22 @@ INSERT INTO Team_Roster (roster_id, player_id, team_season_id, season_id, jersey
 --8. Games (Spring 2026 = 10 completed w/ scores; Summer 2026 = 5 scheduled)
 INSERT INTO Games (game_id, season_id, home_team_season_id, away_team_season_id, location_id, game_date, start_time, home_score, away_score, game_status, winner_team_season_id) VALUES
   --Spring 2026 (season 1) — completed
-  (1,  1, 1, 2, 1, '2026-02-14', '10:00', 3, 1, 'Completed', 1),
-  (2,  1, 3, 1, 2, '2026-02-21', '12:00', 2, 2, 'Completed', NULL),   -- tie
-  (3,  1, 1, 4, 1, '2026-02-28', '14:00', 4, 0, 'Completed', 1),
-  (4,  1, 5, 1, 3, '2026-03-07', '10:00', 1, 2, 'Completed', 1),
-  (5,  1, 2, 3, 2, '2026-03-14', '12:00', 1, 4, 'Completed', 3),
-  (6,  1, 4, 2, 4, '2026-03-21', '14:00', 3, 0, 'Completed', 4),
-  (7,  1, 2, 5, 1, '2026-03-28', '10:00', 2, 2, 'Completed', NULL),   -- tie
-  (8,  1, 3, 4, 2, '2026-04-04', '12:00', 3, 1, 'Completed', 3),
-  (9,  1, 5, 3, 3, '2026-04-11', '14:00', 0, 1, 'Completed', 3),
-  (10, 1, 4, 5, 4, '2026-04-18', '10:00', 2, 1, 'Completed', 4),
+  (1,  1, 1, 2, 1, '2026-02-14', '10:00:00', 3, 1, 'Completed', 1),
+  (2,  1, 3, 1, 2, '2026-02-21', '12:00:00', 2, 2, 'Completed', NULL),   -- tie
+  (3,  1, 1, 4, 1, '2026-02-28', '14:00:00', 4, 0, 'Completed', 1),
+  (4,  1, 5, 1, 3, '2026-03-07', '10:00:00', 1, 2, 'Completed', 1),
+  (5,  1, 2, 3, 2, '2026-03-14', '12:00:00', 1, 4, 'Completed', 3),
+  (6,  1, 4, 2, 4, '2026-03-21', '14:00:00', 3, 0, 'Completed', 4),
+  (7,  1, 2, 5, 1, '2026-03-28', '10:00:00', 2, 2, 'Completed', NULL),   -- tie
+  (8,  1, 3, 4, 2, '2026-04-04', '12:00:00', 3, 1, 'Completed', 3),
+  (9,  1, 5, 3, 3, '2026-04-11', '14:00:00', 0, 1, 'Completed', 3),
+  (10, 1, 4, 5, 4, '2026-04-18', '10:00:00', 2, 1, 'Completed', 4),
   --Summer 2026 (season 2) — scheduled, no scores yet
-  (11, 2, 6, 7, 1, '2026-07-04', '10:00', NULL, NULL, 'Scheduled', NULL),
-  (12, 2, 7, 6, 2, '2026-07-11', '12:00', NULL, NULL, 'Scheduled', NULL),
-  (13, 2, 6, 7, 1, '2026-07-18', '10:00', NULL, NULL, 'Scheduled', NULL),
-  (14, 2, 7, 6, 3, '2026-07-25', '14:00', NULL, NULL, 'Scheduled', NULL),
-  (15, 2, 6, 7, 1, '2026-08-01', '10:00', NULL, NULL, 'Scheduled', NULL);
+  (11, 2, 6, 7, 1, '2026-07-04', '10:00:00', NULL, NULL, 'Scheduled', NULL),
+  (12, 2, 7, 6, 2, '2026-07-11', '12:00:00', NULL, NULL, 'Scheduled', NULL),
+  (13, 2, 6, 7, 1, '2026-07-18', '10:00:00', NULL, NULL, 'Scheduled', NULL),
+  (14, 2, 7, 6, 3, '2026-07-25', '14:00:00', NULL, NULL, 'Scheduled', NULL),
+  (15, 2, 6, 7, 1, '2026-08-01', '10:00:00', NULL, NULL, 'Scheduled', NULL);
 
 --9. Game_Referees (refs assigned to games, some have a head + assistant)
 INSERT INTO Game_Referees (game_referee_id, game_id, referee_id, assignment_role) VALUES
