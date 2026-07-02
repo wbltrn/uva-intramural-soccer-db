@@ -15,21 +15,21 @@ DROP VIEW IF EXISTS v_team_standings;
 DROP VIEW IF EXISTS v_player_participation;
 
 CREATE VIEW v_dashboard_counts AS
-SELECT 'Teams' AS category, COUNT(*) AS total FROM Teams
+SELECT 'Teams' AS category, COUNT(*) AS total FROM Team
 UNION ALL
-SELECT 'Players', COUNT(*) FROM Players
+SELECT 'Players', COUNT(*) FROM Player
 UNION ALL
-SELECT 'Seasons', COUNT(*) FROM Seasons
+SELECT 'Seasons', COUNT(*) FROM Season
 UNION ALL
-SELECT 'Games', COUNT(*) FROM Games
+SELECT 'Games', COUNT(*) FROM Game
 UNION ALL
-SELECT 'Completed Games', COUNT(*) FROM Games WHERE game_status = 'Completed'
+SELECT 'Completed Games', COUNT(*) FROM Game WHERE game_status = 'Completed'
 UNION ALL
-SELECT 'Scheduled Games', COUNT(*) FROM Games WHERE game_status = 'Scheduled'
+SELECT 'Scheduled Games', COUNT(*) FROM Game WHERE game_status = 'Scheduled'
 UNION ALL
-SELECT 'Referees', COUNT(*) FROM Referees
+SELECT 'Referees', COUNT(*) FROM Referee
 UNION ALL
-SELECT 'Locations', COUNT(*) FROM Locations;
+SELECT 'Locations', COUNT(*) FROM Location;
 
 CREATE VIEW v_roster_sizes AS
 SELECT
@@ -41,9 +41,9 @@ SELECT
     WHEN COUNT(tr.player_id) BETWEEN 8 AND 18 THEN 'Valid'
     ELSE 'Needs Review'
   END AS roster_rule_status
-FROM Team_Seasons ts
-JOIN Teams t ON ts.team_id = t.team_id
-JOIN Seasons s ON ts.season_id = s.season_id
+FROM Team_Season ts
+JOIN Team t ON ts.team_id = t.team_id
+JOIN Season s ON ts.season_id = s.season_id
 LEFT JOIN Team_Roster tr ON ts.team_season_id = tr.team_season_id
 GROUP BY ts.team_season_id, t.team_name, s.season_name;
 
@@ -63,10 +63,10 @@ SELECT
   tr.roster_status,
   CASE WHEN tr.is_captain = 1 THEN 'Yes' ELSE 'No' END AS captain
 FROM Team_Roster tr
-JOIN Players p ON tr.player_id = p.player_id
-JOIN Team_Seasons ts ON tr.team_season_id = ts.team_season_id
-JOIN Teams t ON ts.team_id = t.team_id
-JOIN Seasons s ON tr.season_id = s.season_id;
+JOIN Player p ON tr.player_id = p.player_id
+JOIN Team_Season ts ON tr.team_season_id = ts.team_season_id
+JOIN Team t ON ts.team_id = t.team_id
+JOIN Season s ON tr.season_id = s.season_id;
 
 CREATE VIEW v_game_details AS
 SELECT
@@ -86,13 +86,13 @@ SELECT
     WHEN g.home_score > g.away_score THEN home.team_name
     ELSE away.team_name
   END AS result
-FROM Games g
-JOIN Seasons s ON g.season_id = s.season_id
-JOIN Team_Seasons hts ON g.home_team_season_id = hts.team_season_id
-JOIN Teams home ON hts.team_id = home.team_id
-JOIN Team_Seasons ats ON g.away_team_season_id = ats.team_season_id
-JOIN Teams away ON ats.team_id = away.team_id
-JOIN Locations l ON g.location_id = l.location_id;
+FROM Game g
+JOIN Season s ON g.season_id = s.season_id
+JOIN Team_Season hts ON g.home_team_season_id = hts.team_season_id
+JOIN Team home ON hts.team_id = home.team_id
+JOIN Team_Season ats ON g.away_team_season_id = ats.team_season_id
+JOIN Team away ON ats.team_id = away.team_id
+JOIN Location l ON g.location_id = l.location_id;
 
 CREATE VIEW v_referee_assignments AS
 SELECT
@@ -105,13 +105,13 @@ SELECT
   r.name AS referee_name,
   r.certification,
   gr.assignment_role
-FROM Game_Referees gr
-JOIN Games g ON gr.game_id = g.game_id
-JOIN Team_Seasons hts ON g.home_team_season_id = hts.team_season_id
-JOIN Teams home ON hts.team_id = home.team_id
-JOIN Team_Seasons ats ON g.away_team_season_id = ats.team_season_id
-JOIN Teams away ON ats.team_id = away.team_id
-JOIN Referees r ON gr.referee_id = r.referee_id;
+FROM Game_Referee gr
+JOIN Game g ON gr.game_id = g.game_id
+JOIN Team_Season hts ON g.home_team_season_id = hts.team_season_id
+JOIN Team home ON hts.team_id = home.team_id
+JOIN Team_Season ats ON g.away_team_season_id = ats.team_season_id
+JOIN Team away ON ats.team_id = away.team_id
+JOIN Referee r ON gr.referee_id = r.referee_id;
 
 CREATE VIEW v_location_usage AS
 SELECT
@@ -121,8 +121,8 @@ SELECT
   l.capacity,
   l.availability_status,
   COUNT(g.game_id) AS total_games
-FROM Locations l
-LEFT JOIN Games g ON l.location_id = g.location_id
+FROM Location l
+LEFT JOIN Game g ON l.location_id = g.location_id
 GROUP BY l.location_id, l.field_name, l.field_type, l.capacity, l.availability_status;
 
 CREATE VIEW v_player_participation AS
@@ -132,7 +132,7 @@ SELECT
   p.skill_level,
   COUNT(DISTINCT tr.season_id) AS seasons_played,
   COUNT(DISTINCT tr.team_season_id) AS teams_played_for
-FROM Players p
+FROM Player p
 LEFT JOIN Team_Roster tr ON p.player_id = tr.player_id
 GROUP BY p.player_id, p.name, p.skill_level;
 
@@ -146,7 +146,7 @@ WITH all_team_games AS (
     CASE WHEN g.home_score > g.away_score THEN 1 ELSE 0 END AS win,
     CASE WHEN g.home_score = g.away_score THEN 1 ELSE 0 END AS tie,
     CASE WHEN g.home_score < g.away_score THEN 1 ELSE 0 END AS loss
-  FROM Games g
+  FROM Game g
   WHERE g.game_status = 'Completed'
 
   UNION ALL
@@ -159,7 +159,7 @@ WITH all_team_games AS (
     CASE WHEN g.away_score > g.home_score THEN 1 ELSE 0 END AS win,
     CASE WHEN g.away_score = g.home_score THEN 1 ELSE 0 END AS tie,
     CASE WHEN g.away_score < g.home_score THEN 1 ELSE 0 END AS loss
-  FROM Games g
+  FROM Game g
   WHERE g.game_status = 'Completed'
 )
 SELECT
@@ -174,7 +174,7 @@ SELECT
   SUM(goals_for - goals_against) AS goal_difference,
   SUM(win * 3 + tie) AS points
 FROM all_team_games atg
-JOIN Team_Seasons ts ON atg.team_season_id = ts.team_season_id
-JOIN Teams t ON ts.team_id = t.team_id
-JOIN Seasons s ON atg.season_id = s.season_id
+JOIN Team_Season ts ON atg.team_season_id = ts.team_season_id
+JOIN Team t ON ts.team_id = t.team_id
+JOIN Season s ON atg.season_id = s.season_id
 GROUP BY s.season_name, t.team_name;
