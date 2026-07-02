@@ -2,13 +2,13 @@
 
 --1. Seasons
 
-INSERT INTO Seasons (season_id, season_name, start_date, end_date, registration_deadline, season_status) VALUES
+INSERT INTO Season (season_id, season_name, start_date, end_date, registration_deadline, season_status) VALUES
   (1, 'Spring 2026', '2026-02-07', '2026-04-25', '2026-01-30', 'Completed'),
   (2, 'Summer 2026', '2026-06-05', '2026-08-14', '2026-05-29', 'Active');
 
 
 --2. Teams
-INSERT INTO Teams (team_id, team_name, division, team_status, created_date) VALUES
+INSERT INTO Team (team_id, team_name, division, team_status, created_date) VALUES
   (1, 'UVA Cavs',      'A', 'Active', '2026-01-15'),
   (2, 'Blue Hawks',    'A', 'Active', '2026-01-16'),
   (3, 'Vikings',       'B', 'Active', '2026-01-17'),
@@ -16,14 +16,14 @@ INSERT INTO Teams (team_id, team_name, division, team_status, created_date) VALU
   (5, 'Silver Sharks', 'A', 'Active', '2026-01-20');
 
 --3. Locations
-INSERT INTO Locations (location_id, field_name, field_address, field_type, capacity, availability_status) VALUES
+INSERT INTO Location (location_id, field_name, field_address, field_type, capacity, availability_status) VALUES
   (1, 'Carr''s Hill Field', 'University Avenue, Charlottesville, VA 22903', 'Grass', 200, 'Available'),
   (2, 'Lambeth Field',      'Venable, VA 22903',   'Grass', 300, 'Available'),
   (3, 'The Park at UVA',    'Charlottesville, VA 22903',   'Turf',  150, 'Available'),
   (4, 'Nameless Fields',    '110 Newcomb Rd N, Charlottesville, VA 22903',    'Turf',  250, 'Maintenance');
 
 --4. Referees
-INSERT INTO Referees (referee_id, name, email, phone, certification, availability, active_status) VALUES
+INSERT INTO Referee (referee_id, name, email, phone, certification, availability, active_status) VALUES
   (1, 'Marcus Lee',  'mlee@virginia.edu',    '434-555-0101', 'Level 2',  'Available',   1),
   (2, 'Priya Nair',  'pnair@virginia.edu',   '434-555-0102', 'Level 1',  'Available',   1),
   (3, 'Tom Becker',  'tbecker@virginia.edu', '434-555-0103', 'National', 'Available',   1),
@@ -33,7 +33,7 @@ INSERT INTO Referees (referee_id, name, email, phone, certification, availabilit
 
 --5. Players (40) — grouped 8 per team for Spring 2026 rosters
 -- Cavs (1-8)
-INSERT INTO Players (player_id, student_id, name, email, phone, skill_level, eligibility_status, active_status) VALUES
+INSERT INTO Player (player_id, student_id, name, email, phone, skill_level, eligibility_status, active_status) VALUES
   (1,  'S1001', 'Jacob Miller',    'jmiller@virginia.edu',  '434-555-0201', 'Advanced',     'Eligible',   1),
   (2,  'S1002', 'Liam O''Brien',   'lobrien@virginia.edu',  '434-555-0202', 'Intermediate', 'Eligible',   1),
   (3,  'S1003', 'Noah Williams',   'nwilliams@virginia.edu','434-555-0203', 'Beginner',     'Eligible',   1),
@@ -80,7 +80,7 @@ INSERT INTO Players (player_id, student_id, name, email, phone, skill_level, eli
   (40, 'S1040', 'Ruby Coleman',    'rcoleman@virginia.edu', '434-555-0240', 'Advanced',     'Eligible',   1);
 
 --6. Team_Seasons (which team plays which season, + captain)
-INSERT INTO Team_Seasons (team_season_id, team_id, season_id, captain_player_id) VALUES
+INSERT INTO Team_Season (team_season_id, team_id, season_id, captain_player_id) VALUES
   -- Spring 2026 (season 1): all 5 teams
   (1, 1, 1, 1),    -- Cavs,          captain Jacob Miller (player 1)
   (2, 2, 1, 9),    -- Blue Hawks,    captain Aiden Patel (player 9)
@@ -160,7 +160,7 @@ INSERT INTO Team_Roster (roster_id, player_id, team_season_id, season_id, jersey
   (56,  8, 7, 2,  5, 'Active',   0);
 
 --8. Games (Spring 2026 = 10 completed w/ scores; Summer 2026 = 5 scheduled)
-INSERT INTO Games (game_id, season_id, home_team_season_id, away_team_season_id, location_id, game_date, start_time, home_score, away_score, game_status, winner_team_season_id) VALUES
+INSERT INTO Game (game_id, season_id, home_team_season_id, away_team_season_id, location_id, game_date, start_time, home_score, away_score, game_status, winner_team_season_id) VALUES
   --Spring 2026 (season 1) — completed
   (1,  1, 1, 2, 1, '2026-02-14', '10:00:00', 3, 1, 'Completed', 1),
   (2,  1, 3, 1, 2, '2026-02-21', '12:00:00', 2, 2, 'Completed', NULL),   -- tie
@@ -180,7 +180,7 @@ INSERT INTO Games (game_id, season_id, home_team_season_id, away_team_season_id,
   (15, 2, 6, 7, 1, '2026-08-01', '10:00:00', NULL, NULL, 'Scheduled', NULL);
 
 --9. Game_Referees (refs assigned to games, some have a head + assistant)
-INSERT INTO Game_Referees (game_referee_id, game_id, referee_id, assignment_role) VALUES
+INSERT INTO Game_Referee (game_referee_id, game_id, referee_id, assignment_role) VALUES
   (1,   1, 1, 'Head Referee'),
   (2,   1, 2, 'Assistant'),
   (3,   2, 3, 'Head Referee'),
@@ -204,7 +204,7 @@ INSERT INTO Game_Referees (game_referee_id, game_id, referee_id, assignment_role
   (21, 15, 1, 'Head Referee');
 
 --10. User_Accounts (1 admin + 5 team captains)
-INSERT INTO User_Accounts (user_id, username, password_hash, role, player_id, team_season_id) VALUES
+INSERT INTO User_Account (user_id, username, password_hash, role, player_id, team_season_id) VALUES
   (1, 'admin',   'hash_admin_9f8a', 'Admin',   NULL, NULL),
   (2, 'jmiller', 'hash_jm_4b2c',    'Captain', 1,  1),
   (3, 'apatel',  'hash_ap_7d1e',    'Captain', 9,  2),
