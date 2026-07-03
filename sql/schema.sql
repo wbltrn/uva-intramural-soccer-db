@@ -59,9 +59,9 @@ CREATE TABLE Team_Season (
   season_id         INTEGER NOT NULL,
   captain_player_id INTEGER,
   UNIQUE (team_id, season_id),
-  FOREIGN KEY (team_id) REFERENCES Teams(team_id),
-  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
-  FOREIGN KEY (captain_player_id) REFERENCES Players(player_id)
+  FOREIGN KEY (team_id) REFERENCES Team(team_id),
+  FOREIGN KEY (season_id) REFERENCES Season(season_id),
+  FOREIGN KEY (captain_player_id) REFERENCES Player(player_id)
 );
 
 --table linking players to teams for a specific season
@@ -74,9 +74,9 @@ CREATE TABLE Team_Roster (
   roster_status TEXT DEFAULT 'Active',
   is_captain INTEGER DEFAULT 0,
   UNIQUE (player_id, season_id),
-  FOREIGN KEY (player_id) REFERENCES Players(player_id),
-  FOREIGN KEY (team_season_id) REFERENCES Team_Seasons(team_season_id),
-  FOREIGN KEY (season_id) REFERENCES Seasons(season_id)
+  FOREIGN KEY (player_id) REFERENCES Player(player_id),
+  FOREIGN KEY (team_season_id) REFERENCES Team_Season(team_season_id),
+  FOREIGN KEY (season_id) REFERENCES Season(season_id)
 );
 
 -- Table for games
@@ -92,11 +92,11 @@ CREATE TABLE Game (
   away_score           INTEGER,
   game_status          TEXT DEFAULT 'Scheduled',
   winner_team_season_id INTEGER,
-  FOREIGN KEY (season_id) REFERENCES Seasons(season_id),
-  FOREIGN KEY (home_team_season_id) REFERENCES Team_Seasons(team_season_id),
-  FOREIGN KEY (away_team_season_id) REFERENCES Team_Seasons(team_season_id),
-  FOREIGN KEY (location_id) REFERENCES Locations(location_id),
-  FOREIGN KEY (winner_team_season_id) REFERENCES Team_Seasons(team_season_id),
+  FOREIGN KEY (season_id) REFERENCES Season(season_id),
+  FOREIGN KEY (home_team_season_id) REFERENCES Team_Season(team_season_id),
+  FOREIGN KEY (away_team_season_id) REFERENCES Team_Season(team_season_id),
+  FOREIGN KEY (location_id) REFERENCES Location(location_id),
+  FOREIGN KEY (winner_team_season_id) REFERENCES Team_Season(team_season_id),
   CHECK (home_team_season_id <> away_team_season_id),
   CHECK (home_score IS NULL OR home_score >= 0),
   CHECK (away_score IS NULL OR away_score >= 0)
@@ -109,8 +109,8 @@ CREATE TABLE Game_Referee (
   referee_id      INTEGER NOT NULL,
   assignment_role TEXT,
   UNIQUE (game_id, referee_id),
-  FOREIGN KEY (game_id) REFERENCES Games(game_id),
-  FOREIGN KEY (referee_id) REFERENCES Referees(referee_id)
+  FOREIGN KEY (game_id) REFERENCES Game(game_id),
+  FOREIGN KEY (referee_id) REFERENCES Referee(referee_id)
 );
 
 --table for user logins and access roles
@@ -121,6 +121,6 @@ CREATE TABLE User_Account (
   role           TEXT CHECK (role IN ('Admin','Captain')),
   player_id      INTEGER,
   team_season_id INTEGER,
-  FOREIGN KEY (player_id) REFERENCES Players(player_id),
-  FOREIGN KEY (team_season_id) REFERENCES Team_Seasons(team_season_id)
+  FOREIGN KEY (player_id) REFERENCES Player(player_id),
+  FOREIGN KEY (team_season_id) REFERENCES Team_Season(team_season_id)
 );
