@@ -3,7 +3,7 @@ CREATE TABLE Team (
   team_id  INTEGER PRIMARY KEY,
   team_name TEXT NOT NULL,
   division TEXT,
-  team_status TEXT DEFAULT 'Active',
+  team_status TEXT DEFAULT 'Active' CHECK (team_status IN ('Active','Inactive')),
   created_date DATE DEFAULT CURRENT_DATE
 );
 
@@ -15,8 +15,8 @@ CREATE TABLE Player (
   email TEXT,
   phone TEXT,
   skill_level TEXT CHECK (skill_level IN ('Beginner','Intermediate','Advanced')),
-  eligibility_status TEXT DEFAULT 'Eligible',
-  active_status INTEGER DEFAULT 1
+  eligibility_status TEXT DEFAULT 'Eligible' CHECK (eligibility_status IN ('Eligible','Ineligible')),
+  active_status BOOLEAN DEFAULT 1
 );
 
 -- Table for seasons
@@ -26,7 +26,7 @@ CREATE TABLE Season (
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   registration_deadline DATE,
-  season_status TEXT DEFAULT 'Upcoming',
+  season_status TEXT DEFAULT 'Upcoming' CHECK (season_status IN ('Upcoming','Active','Completed')),
   CHECK (end_date >= start_date),
   CHECK (registration_deadline IS NULL OR registration_deadline <= start_date)
 );
@@ -38,7 +38,7 @@ CREATE TABLE Location (
   field_address TEXT,
   field_type TEXT,
   capacity INTEGER,
-  availability_status TEXT DEFAULT 'Available'
+  availability_status TEXT DEFAULT 'Available' CHECK (availability_status IN ('Available','Unavailable','Maintenance'))
 );
 
 -- Table for referees
@@ -48,8 +48,8 @@ CREATE TABLE Referee (
   email TEXT,
   phone TEXT,
   certification TEXT,
-  availability TEXT,
-  active_status INTEGER DEFAULT 1
+  availability TEXT CHECK (availability IN ('Available','Unavailable')),
+  active_status BOOLEAN DEFAULT 1
 );
 
 --table linking a team to a season
@@ -71,8 +71,8 @@ CREATE TABLE Team_Roster (
   team_season_id INTEGER NOT NULL,
   season_id INTEGER NOT NULL,
   jersey_number INTEGER,
-  roster_status TEXT DEFAULT 'Active',
-  is_captain INTEGER DEFAULT 0,
+  roster_status TEXT DEFAULT 'Active' CHECK (roster_status IN ('Active','Inactive')),
+  is_captain BOOLEAN DEFAULT 0,
   UNIQUE (player_id, season_id),
   FOREIGN KEY (player_id) REFERENCES Player(player_id),
   FOREIGN KEY (team_season_id) REFERENCES Team_Season(team_season_id),
@@ -90,7 +90,7 @@ CREATE TABLE Game (
   start_time           TIME NOT NULL,
   home_score           INTEGER,
   away_score           INTEGER,
-  game_status          TEXT DEFAULT 'Scheduled',
+  game_status          TEXT DEFAULT 'Scheduled' CHECK (game_status IN ('Scheduled','Completed','Cancelled')),
   winner_team_season_id INTEGER,
   FOREIGN KEY (season_id) REFERENCES Season(season_id),
   FOREIGN KEY (home_team_season_id) REFERENCES Team_Season(team_season_id),
