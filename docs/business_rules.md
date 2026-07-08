@@ -19,12 +19,12 @@ This document lists the business rules for the UVA Intramural Soccer League data
 ## Team Captain
 
 9. Each Team_Season record may have one designated captain.
-10. A Player may serve as captain for at most one Team_Season record at a time.
-11. The captain must be a Player associated with the Team_Season record.
+10. The captain must be a Player listed on the Team_Season roster.
+11. A Player may serve as captain for at most one Team_Season record at a time.
 
 ## Roster Size
 
-12. Each Team must maintain a roster for each Season in which the Team participates.
+12. Each Team must maintain a roster for every Season in which the Team participates.
 13. Each Team roster must include at least 8 Players and no more than 18 Players during a Season.
 
 ## Game and Team
@@ -46,7 +46,7 @@ This document lists the business rules for the UVA Intramural Soccer League data
 
 ## Game and Referee
 
-22. Each Game may have one or more Referees assigned.
+22. Each Game must have at least one Referee assigned.
 23. Each Referee may officiate many Games throughout a Season.
 24. A Referee should not be assigned to overlapping Games occurring at the same date and time.
 
@@ -58,3 +58,11 @@ This document lists the business rules for the UVA Intramural Soccer League data
 28. If the home score and away score are equal, the Game result is recorded as a tie.
 29. If the home score is greater than the away score, the home Team is the winner.
 30. If the away score is greater than the home score, the away Team is the winner.
+
+## User Accounts and Access Control
+
+31. Each User_Account may optionally be associated with a Player.
+32. Team captains may be linked to their Team_Season record through a User_Account.
+33. User roles determine the level of access available within the system.
+34. Administrators have full access to manage Players, Teams, Seasons, Games, Locations, Referees, and User Accounts.
+35. Team captains may manage roster information only for their own Team.
