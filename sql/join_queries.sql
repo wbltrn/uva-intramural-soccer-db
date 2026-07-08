@@ -1,9 +1,16 @@
+-- UVA Intramural Soccer League Database System
+-- join_queries.sql
+-- Meaningful join queries for user-facing reports.
+-- Run after schema.sql and inserts.sql.
+
+PRAGMA foreign_keys = ON;
+
 -- Team captains by season
 SELECT
   s.season_name,
   t.team_name,
   t.division,
-  p.name AS captain_name,
+  p.first_name || ' ' || p.last_name AS captain_name,
   p.email AS captain_email
 FROM Team_Season ts
 JOIN Team t ON ts.team_id = t.team_id
@@ -15,12 +22,12 @@ ORDER BY s.season_name, t.team_name;
 SELECT
   s.season_name,
   t.team_name,
-  p.name AS player_name,
+  p.first_name || ' ' || p.last_name AS player_name,
   p.skill_level,
   tr.jersey_number,
   tr.roster_status,
   CASE
-    WHEN tr.is_captain = 1 THEN 'Yes'
+    WHEN ts.captain_player_id = p.player_id THEN 'Yes'
     ELSE 'No'
   END AS captain
 FROM Team_Roster tr
@@ -28,7 +35,12 @@ JOIN Player p ON tr.player_id = p.player_id
 JOIN Team_Season ts ON tr.team_season_id = ts.team_season_id
 JOIN Team t ON ts.team_id = t.team_id
 JOIN Season s ON tr.season_id = s.season_id
-ORDER BY s.season_name, t.team_name, tr.is_captain DESC, p.name;
+ORDER BY
+  s.season_name,
+  t.team_name,
+  CASE WHEN ts.captain_player_id = p.player_id THEN 0 ELSE 1 END,
+  p.last_name,
+  p.first_name;
 
 -- Completed game results
 SELECT
@@ -56,7 +68,6 @@ JOIN Team away ON ats.team_id = away.team_id
 WHERE g.game_status = 'Completed'
 ORDER BY g.game_date, g.start_time;
 
-
 -- Upcoming scheduled games
 SELECT
   g.game_id,
@@ -77,7 +88,6 @@ JOIN Team away ON ats.team_id = away.team_id
 WHERE g.game_status = 'Scheduled'
 ORDER BY g.game_date, g.start_time;
 
-
 -- Referee assignments
 SELECT
   g.game_id,
@@ -85,7 +95,7 @@ SELECT
   g.start_time,
   home.team_name AS home_team,
   away.team_name AS away_team,
-  r.name AS referee_name,
+  r.first_name || ' ' || r.last_name AS referee_name,
   gr.assignment_role
 FROM Game_Referee gr
 JOIN Game g ON gr.game_id = g.game_id
