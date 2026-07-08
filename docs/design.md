@@ -14,25 +14,29 @@ The project uses the following technologies:
 - Streamlit for the user interface
 - Python for application logic
 - GitHub for version control
-- SQL scripts for database creation, sample data, queries, and views
+- SQL scripts for database creation, sample data, queries, views, and reports
 
 ## System Architecture
 
 The system follows a simple layered architecture.
 
-1. User Interface Layer
-   - Built with Streamlit
-   - Allows users to view tables, submit forms, and display reports
+### 1. User Interface Layer
 
-2. Application Logic Layer
-   - Implemented in Python
-   - Connects the Streamlit interface to the SQLite database
-   - Handles report display and basic role-based behavior
+- Built with Streamlit
+- Allows users to view tables, submit forms, and display reports
+- Provides dashboards, roster views, game schedules, and standings reports
 
-3. Database Layer
-   - Implemented using SQLite
-   - Stores relational data in normalized tables
-   - Uses primary keys, foreign keys, constraints, and associative entities
+### 2. Application Logic Layer
+
+- Implemented in Python
+- Connects the Streamlit interface to the SQLite database
+- Handles data retrieval, report generation, and role-based behavior
+
+### 3. Database Layer
+
+- Implemented using SQLite
+- Stores relational data in normalized tables
+- Uses primary keys, foreign keys, constraints, and associative entities
 
 ## Database Naming Convention
 
@@ -58,7 +62,7 @@ Associative entities also use singular naming:
 
 ### Player
 
-The Player entity stores information about students participating in intramural soccer. Attributes include player ID, student ID, name, email, phone number, skill level, eligibility status, and active status.
+The Player entity stores information about students participating in intramural soccer. Attributes include player ID, student ID, first name, last name, email, phone number, skill level, eligibility status, and active status.
 
 ### Team
 
@@ -70,11 +74,11 @@ The Season entity stores information about each intramural soccer season. Attrib
 
 ### Team_Season
 
-The Team_Season entity connects Team and Season. This allows the same team to participate in multiple seasons and allows each season to include multiple teams. It also stores the captain for a team during a specific season.
+The Team_Season entity connects Team and Season. This allows the same Team to participate in multiple Seasons and allows each Season to include multiple Teams. The entity also stores the designated captain for a Team during a specific Season through the captain_player_id attribute.
 
 ### Team_Roster
 
-The Team_Roster entity connects Player to Team_Season. This allows roster membership to be tracked by season. This design supports the rule that a player may belong to only one team per season but may join a different team in a future season.
+The Team_Roster entity connects Player and Team_Season. This allows roster membership to be tracked by Season. The design supports the business rule that a Player may belong to only one Team per Season but may join a different Team in a future Season.
 
 ### Game
 
@@ -86,15 +90,15 @@ The Location entity stores information about fields used for intramural soccer g
 
 ### Referee
 
-The Referee entity stores information about referees. Attributes include referee ID, name, email, phone number, certification, availability, and active status.
+The Referee entity stores information about referees. Attributes include referee ID, first name, last name, email, phone number, certification level, availability status, and active status.
 
 ### Game_Referee
 
-The Game_Referee entity connects Game and Referee. This allows one game to have multiple referees and one referee to be assigned to multiple games.
+The Game_Referee entity connects Game and Referee. This allows one Game to have multiple Referees and one Referee to officiate multiple Games.
 
 ### User_Account
 
-The User_Account entity supports access control. It stores user login information, password hash, role, and optional links to Player and Team_Season records.
+The User_Account entity supports authentication and authorization. It stores user login information, password hash, access role, and optional links to Player and Team_Season records.
 
 ## Relationship Design
 
@@ -102,27 +106,31 @@ The database uses associative entities to resolve many-to-many relationships.
 
 ### Player and Team_Season
 
-A player can be assigned to a team for a specific season through Team_Roster. Team_Roster makes it possible to track which players are on which team during each season.
+A Player can be assigned to a Team for a specific Season through Team_Roster. Team_Roster tracks roster membership and ensures that Players are associated with the correct Team during a Season.
 
 ### Team and Season
 
-A team can participate in multiple seasons, and each season can include multiple teams. This relationship is represented through Team_Season.
+A Team can participate in multiple Seasons, and each Season can include multiple Teams. This relationship is represented through Team_Season.
+
+### Team Captain Assignment
+
+Each Team_Season record may have one designated captain through captain_player_id. The captain must also be listed on the corresponding Team roster.
 
 ### Game and Referee
 
-A game can have one or more referees, and a referee can officiate many games. This relationship is represented through Game_Referee.
+A Game may have one or more Referees assigned, and a Referee may officiate many Games. This relationship is represented through Game_Referee.
 
 ### Game and Team_Season
 
-Each game has two team-season references: one for the home team and one for the away team. This makes it possible to identify which version of a team is playing during a specific season.
+Each Game references two Team_Season records: one for the home Team and one for the away Team. This design ensures that Game participation is tracked at the season level.
 
 ### Game and Location
 
-Each game is assigned to one location. A location can host many games over time.
+Each Game is assigned to exactly one Location. A Location may host many Games over time but cannot host multiple Games at the same date and time.
 
 ## Normalization
 
-The database design was reviewed for Third Normal Form (3NF). The design separates data into related entities so that non-key attributes depend on the primary key of their table.
+The database design was reviewed for Third Normal Form (3NF). The design separates data into related entities so that non-key attributes depend only on the primary key of their respective tables.
 
 Examples of normalization include:
 
@@ -131,20 +139,32 @@ Examples of normalization include:
 - Season information is stored only in Season.
 - Roster membership is stored in Team_Roster instead of directly in Player or Team.
 - Referee assignments are stored in Game_Referee instead of directly in Game or Referee.
-- Team participation by season is stored in Team_Season.
+- Team participation by Season is stored in Team_Season.
+- Team captain information is stored in Team_Season rather than being duplicated across multiple tables.
 
-This reduces redundant data and supports clearer relationships between entities.
+This approach reduces redundancy and helps maintain data consistency.
 
 ## Date and Time Design
 
-The schema uses DATE and TIME data types for readability and to represent the intended meaning of the data. SQLite does not have native DATE or TIME storage classes, so these values are stored using ISO-8601 formatted text values.
+The schema uses DATE and TIME data types to clearly represent the intended meaning of date and time values.
+
+Examples include:
+
+- Team.created_date → DATE
+- Season.start_date → DATE
+- Season.end_date → DATE
+- Season.registration_deadline → DATE
+- Game.game_date → DATE
+- Game.start_time → TIME
+
+SQLite does not provide native DATE or TIME storage classes. Therefore, date and time values are stored using ISO-8601 formatted text values.
 
 Examples:
 
 - Date format: YYYY-MM-DD
 - Time format: HH:MM:SS
 
-Example values:
+Sample values:
 
 - 2026-02-07
 - 2026-04-25
@@ -152,7 +172,7 @@ Example values:
 
 ## Views
 
-Views are used to make reports and the Streamlit interface easier to build. The project includes views such as:
+Views are used to simplify reporting and support the Streamlit interface. The project includes the following views:
 
 - v_dashboard_counts
 - v_roster_sizes
@@ -163,23 +183,33 @@ Views are used to make reports and the Streamlit interface easier to build. The 
 - v_team_standings
 - v_player_participation
 
-These views simplify common reports by combining related tables and calculations.
+These views simplify common reports by combining related tables and calculations into reusable query structures.
 
 ## Design Decisions
 
-The group chose SQLite because it is lightweight, easy to set up, and appropriate for a smaller course project. SQLite allows each team member to recreate the database locally using shared SQL scripts.
+SQLite was selected because it is lightweight, easy to configure, and well suited for a course project with a moderate-sized dataset. Using SQLite allows each team member to recreate the database locally using shared SQL scripts.
 
-The group chose Streamlit because it allows the team to quickly build an interactive interface using Python. Streamlit is suitable for displaying tables, forms, dashboards, and reports without requiring a complex frontend framework.
+Streamlit was selected because it allows the team to rapidly develop an interactive web-based interface using Python. Streamlit supports dashboards, forms, reports, and database connectivity without requiring a separate frontend framework.
 
 ## Current Implementation Files
 
-The main SQL implementation files are stored in the sql/ folder:
+The main SQL implementation files are stored in the `sql/` folder:
 
 - schema.sql
 - inserts.sql
 - queries.sql
 - views.sql
+- join_queries.sql
+- associative_entity_queries.sql
 
-The Streamlit app is stored in the app/ folder:
+The Streamlit application is stored in the `app/` folder:
 
 - app.py
+
+Project documentation is stored in the `docs/` folder:
+
+- design.md
+- requirements.md
+- business_rules.md
+- security_requirements.md
+- status_report_2_notes.md
