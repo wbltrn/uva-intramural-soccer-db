@@ -34,25 +34,36 @@ WHERE division = 'A'
 ORDER BY team_name;
 
 -- 2.2 Eligible and active players with advanced skill level.
-SELECT player_id, student_id, name, email, skill_level, eligibility_status
+SELECT
+  player_id,
+  student_id,
+  first_name || ' ' || last_name AS player_name,
+  email,
+  skill_level,
+  eligibility_status
 FROM Player
 WHERE skill_level = 'Advanced'
   AND eligibility_status = 'Eligible'
-  AND active_status = 1
-ORDER BY name;
+  AND is_active = 1
+ORDER BY last_name, first_name;
 
 -- 2.3 Players who are ineligible or inactive and may need administrator review.
-SELECT player_id, student_id, name, eligibility_status, active_status
+SELECT
+  player_id,
+  student_id,
+  first_name || ' ' || last_name AS player_name,
+  eligibility_status,
+  is_active
 FROM Player
 WHERE eligibility_status <> 'Eligible'
-   OR active_status = 0
-ORDER BY name;
+   OR is_active = 0
+ORDER BY last_name, first_name;
 
 -- 2.4 Team captains for Spring 2026.
 SELECT
   t.team_name,
   s.season_name,
-  p.name AS captain_name,
+  p.first_name || ' ' || p.last_name AS captain_name,
   p.email AS captain_email
 FROM Team_Season ts
 JOIN Team t ON ts.team_id = t.team_id
@@ -65,10 +76,13 @@ ORDER BY t.team_name;
 SELECT
   t.team_name,
   s.season_name,
-  p.name AS player_name,
+  p.first_name || ' ' || p.last_name AS player_name,
   tr.jersey_number,
   tr.roster_status,
-  CASE WHEN tr.is_captain = 1 THEN 'Yes' ELSE 'No' END AS captain
+  CASE
+    WHEN ts.captain_player_id = p.player_id THEN 'Yes'
+    ELSE 'No'
+  END AS captain
 FROM Team_Roster tr
 JOIN Player p ON tr.player_id = p.player_id
 JOIN Team_Season ts ON tr.team_season_id = ts.team_season_id
@@ -76,7 +90,9 @@ JOIN Team t ON ts.team_id = t.team_id
 JOIN Season s ON tr.season_id = s.season_id
 WHERE t.team_name = 'UVA Cavs'
   AND s.season_name = 'Spring 2026'
-ORDER BY tr.is_captain DESC, tr.jersey_number;
+ORDER BY
+  CASE WHEN ts.captain_player_id = p.player_id THEN 0 ELSE 1 END,
+  tr.jersey_number;
 
 -- 2.6 Completed games with readable team names and scores.
 SELECT
@@ -122,11 +138,16 @@ WHERE g.game_status = 'Scheduled'
 ORDER BY g.game_date, g.start_time;
 
 -- 2.8 Referees who are currently available and active.
-SELECT referee_id, name, email, phone, certification
+SELECT
+  referee_id,
+  first_name || ' ' || last_name AS referee_name,
+  email,
+  phone,
+  certification
 FROM Referee
 WHERE availability = 'Available'
-  AND active_status = 1
-ORDER BY certification DESC, name;
+  AND is_active = 1
+ORDER BY certification DESC, last_name, first_name;
 
 -- 2.9 Available locations with capacity of at least 200.
 SELECT location_id, field_name, field_type, capacity, availability_status
@@ -140,7 +161,7 @@ SELECT
   g.game_id,
   g.game_date,
   g.start_time,
-  r.name AS referee_name,
+  r.first_name || ' ' || r.last_name AS referee_name,
   gr.assignment_role
 FROM Game_Referee gr
 JOIN Game g ON gr.game_id = g.game_id
@@ -265,39 +286,39 @@ SELECT
   l.field_name,
   l.field_type,
   l.capacity,
-  COUNT(g.game_id) AS total_game
+  COUNT(g.game_id) AS total_games
 FROM Location l
 LEFT JOIN Game g ON l.location_id = g.location_id
 GROUP BY l.location_id, l.field_name, l.field_type, l.capacity
-ORDER BY total_game DESC, l.field_name;
+ORDER BY total_games DESC, l.field_name;
 
 -- 3.7 Number of referee assignments by referee.
 SELECT
-  r.name AS referee_name,
+  r.first_name || ' ' || r.last_name AS referee_name,
   r.certification,
   COUNT(gr.game_id) AS total_assignments
 FROM Referee r
 LEFT JOIN Game_Referee gr ON r.referee_id = gr.referee_id
-GROUP BY r.referee_id, r.name, r.certification
+GROUP BY r.referee_id, r.first_name, r.last_name, r.certification
 ORDER BY total_assignments DESC, referee_name;
 
 -- 3.8 Player participation count across seasons.
 SELECT
-  p.name AS player_name,
+  p.first_name || ' ' || p.last_name AS player_name,
   COUNT(DISTINCT tr.season_id) AS seasons_played,
   COUNT(DISTINCT tr.team_season_id) AS team_season_records
 FROM Player p
 LEFT JOIN Team_Roster tr ON p.player_id = tr.player_id
-GROUP BY p.player_id, p.name
+GROUP BY p.player_id, p.first_name, p.last_name
 ORDER BY seasons_played DESC, player_name;
 
 -- 3.9 Player count by skill level.
 SELECT
   skill_level,
-  COUNT(*) AS total_player
+  COUNT(*) AS total_players
 FROM Player
 GROUP BY skill_level
-ORDER BY total_player DESC, skill_level;
+ORDER BY total_players DESC, skill_level;
 
 -- 3.10 Average goals per completed game.
 SELECT
