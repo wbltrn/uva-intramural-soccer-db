@@ -54,14 +54,17 @@ SELECT
   s.season_name,
   p.player_id,
   p.student_id,
-  p.name AS player_name,
+  p.first_name || ' ' || p.last_name AS player_name,
   p.email,
   p.phone,
   p.skill_level,
   p.eligibility_status,
   tr.jersey_number,
   tr.roster_status,
-  CASE WHEN tr.is_captain = 1 THEN 'Yes' ELSE 'No' END AS captain
+  CASE
+    WHEN ts.captain_player_id = p.player_id THEN 'Yes'
+    ELSE 'No'
+  END AS captain
 FROM Team_Roster tr
 JOIN Player p ON tr.player_id = p.player_id
 JOIN Team_Season ts ON tr.team_season_id = ts.team_season_id
@@ -102,7 +105,7 @@ SELECT
   g.start_time,
   home.team_name AS home_team,
   away.team_name AS away_team,
-  r.name AS referee_name,
+  r.first_name || ' ' || r.last_name AS referee_name,
   r.certification,
   gr.assignment_role
 FROM Game_Referee gr
@@ -128,13 +131,13 @@ GROUP BY l.location_id, l.field_name, l.field_type, l.capacity, l.availability_s
 CREATE VIEW v_player_participation AS
 SELECT
   p.player_id,
-  p.name AS player_name,
+  p.first_name || ' ' || p.last_name AS player_name,
   p.skill_level,
   COUNT(DISTINCT tr.season_id) AS seasons_played,
   COUNT(DISTINCT tr.team_season_id) AS teams_played_for
 FROM Player p
 LEFT JOIN Team_Roster tr ON p.player_id = tr.player_id
-GROUP BY p.player_id, p.name, p.skill_level;
+GROUP BY p.player_id, p.first_name, p.last_name, p.skill_level;
 
 CREATE VIEW v_team_standings AS
 WITH all_team_games AS (
