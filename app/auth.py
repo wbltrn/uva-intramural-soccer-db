@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from db import authenticate
-from ui import NAV_ITEMS, hero
+from ui import NAV_ITEMS, apply_login_layout, inject_login_fixes
 
 
 def is_admin() -> bool:
@@ -30,23 +30,44 @@ def logout() -> None:
 
 
 def show_login() -> None:
-    hero(
-        "UVA Intramural Soccer League",
-        "Manage players, teams, schedules, referees, and league reports.",
-    )
+    apply_login_layout()
+    st.markdown('<div class="login-shell-marker"></div>', unsafe_allow_html=True)
 
-    left, center, right = st.columns([1, 1.2, 1])
-    with center:
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
-        st.markdown("### Sign In")
-        st.caption("Use your administrator or team captain demo account.")
+    brand_col, form_col = st.columns([1.05, 1], gap="small")
 
-        with st.form("login_form", clear_on_submit=False):
-            username = st.text_input("Username", placeholder="admin")
-            password = st.text_input("Password", type="password", placeholder="••••••")
-            submitted = st.form_submit_button("Sign In", use_container_width=True, type="primary")
+    with brand_col:
+        st.markdown(
+            """
+            <div class="login-brand">
+                <div class="logo">⚽</div>
+                <h1>UVA Intramural<br>Soccer League</h1>
+                <p>Database system for managing players, teams, games,
+                referees, and league reports.</p>
+                <ul>
+                    <li>Administrator and captain role-based access</li>
+                    <li>Live data from SQLite views and reports</li>
+                    <li>Roster, scheduling, and standings tools</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        if submitted:
+    with form_col:
+        st.markdown(
+            """
+            <div class="login-form-panel">
+                <h2>Welcome back</h2>
+                <p class="subtitle">Sign in with a demo account to continue.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        username = st.text_input("Username", key="login_username", autocomplete="off")
+        password = st.text_input("Password", key="login_password", autocomplete="new-password")
+
+        if st.button("Sign In", use_container_width=True, type="primary", key="login_submit"):
             user = authenticate(username, password)
             if user:
                 st.session_state["user"] = user
@@ -54,21 +75,21 @@ def show_login() -> None:
                 st.rerun()
             st.error("Invalid username or password.")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class="demo-grid">
+                <div class="demo-chip"><strong>Admin</strong><br>admin / admin</div>
+                <div class="demo-chip"><strong>Cavs</strong><br>jmiller / cavs</div>
+                <div class="demo-chip"><strong>Hawks</strong><br>apatel / hawks</div>
+                <div class="demo-chip"><strong>Vikings</strong><br>srossi / vikings</div>
+                <div class="demo-chip"><strong>Ducks</strong><br>dadams / ducks</div>
+                <div class="demo-chip"><strong>Sharks</strong><br>cturner / sharks</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        with st.expander("Demo accounts", expanded=True):
-            st.markdown(
-                """
-                | Role | Username | Password |
-                |------|----------|----------|
-                | Admin | `admin` | `admin` |
-                | Cavs Captain | `jmiller` | `cavs` |
-                | Blue Hawks Captain | `apatel` | `hawks` |
-                | Vikings Captain | `srossi` | `vikings` |
-                | Golden Ducks Captain | `dadams` | `ducks` |
-                | Silver Sharks Captain | `cturner` | `sharks` |
-                """
-            )
+    inject_login_fixes()
 
 
 def render_sidebar() -> str:
